@@ -17,9 +17,15 @@ import { Button } from '../ui/button'
 import { FormError } from '../form-error'
 import { FormSuccess } from '../form-success'
 import { useState } from 'react'
+import { login } from '@/actions/login'
+import { useTransition } from 'react'
 
 export const LoginForm = () => {
   const [show, setShow] = useState(false)
+  const [error,setError]=useState<string | undefined>("")
+  const [success,setSuccess]=useState<string | undefined>("")
+  const [isPending, starTransition] = useTransition()
+
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -29,7 +35,12 @@ export const LoginForm = () => {
   })
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    console.log(values)
+    starTransition(() => {
+      login(values).then((data)=>{
+        setError(data.error)
+        setSuccess(data.success)
+      })
+    })
   }
   return (
     <CardWrapper
@@ -51,6 +62,7 @@ export const LoginForm = () => {
                     <Input
                       {...field}
                       placeholder="elon@gmail.com"
+                      disabled={isPending}
                       type="email"
                     />
                   </FormControl>
@@ -69,6 +81,7 @@ export const LoginForm = () => {
                       {...field}
                       placeholder="******"
                       type={show ? 'text' : 'password'}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -76,16 +89,22 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          <span>
-            <Button onClick={() => setShow(!show)} size="sm" variant="link">
+          <span className="text-xs">
+            <Button
+              type="button"
+              onClick={() => setShow(!show)}
+              size="xs"
+              variant="link"
+              disabled={isPending}
+            >
               {show ? 'Hide' : 'Show'}
             </Button>
           </span>
 
-          <FormError message="" />
-          <FormSuccess message="" />
+          <FormError message={error} />
+          <FormSuccess message={success} />
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={isPending}>
             Login
           </Button>
         </form>
