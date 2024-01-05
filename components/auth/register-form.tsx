@@ -19,6 +19,7 @@ import { FormSuccess } from '../form-success'
 import { useState } from 'react'
 import { login } from '@/actions/login'
 import { useTransition } from 'react'
+import { register } from '@/actions/register'
 
 export const RegisterForm = () => {
   const [show, setShow] = useState(false)
@@ -37,7 +38,7 @@ export const RegisterForm = () => {
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     starTransition(() => {
-      login(values).then((data)=>{
+      register(values).then((data)=>{
         setError(data.error)
         setSuccess(data.success)
       })
