@@ -6,7 +6,9 @@ export const publicRoutes=[
 export const authRountes=[
     "/auth/login",
     "/auth/register",
-    "/auth/error"
+    "/auth/error",
+    "/auth/reset",
+    "/auth/new-password"
 ]
 
 export const apiAuthPrefix="/api/auth"

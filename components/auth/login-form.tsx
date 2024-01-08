@@ -20,13 +20,17 @@ import { useState } from 'react'
 import { login } from '@/actions/login'
 import { useTransition } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 
 export const LoginForm = () => {
-  const searchParams=useSearchParams();
-  const urlError=searchParams.get("error")==="OAuthAccountNotLinked" ? "Email already in use with other provider" :""
+  const searchParams = useSearchParams()
+  const urlError =
+    searchParams.get('error') === 'OAuthAccountNotLinked'
+      ? 'Email already in use with other provider'
+      : ''
   const [show, setShow] = useState(false)
-  const [error,setError]=useState<string | undefined>("")
-  const [success,setSuccess]=useState<string | undefined>("")
+  const [error, setError] = useState<string | undefined>('')
+  const [success, setSuccess] = useState<string | undefined>('')
   const [isPending, starTransition] = useTransition()
 
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -39,7 +43,7 @@ export const LoginForm = () => {
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     starTransition(() => {
-      login(values).then((data)=>{
+      login(values).then((data) => {
         setError(data?.error)
         setSuccess(data?.success)
       })
@@ -92,7 +96,10 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          <span className="text-xs">
+          <div className="text-xs flex flex-row w-full justify-between">
+            <Button type="button" size="xs" variant="link" disabled={isPending}>
+              <Link href="/auth/reset">Forgot Password?</Link>
+            </Button>
             <Button
               type="button"
               onClick={() => setShow(!show)}
@@ -100,10 +107,10 @@ export const LoginForm = () => {
               variant="link"
               disabled={isPending}
             >
+              {' '}
               {show ? 'Hide' : 'Show'}
             </Button>
-          </span>
-
+          </div>
           <FormError message={error || urlError} />
           <FormSuccess message={success} />
 
